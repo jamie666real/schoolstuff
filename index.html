@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Web Proxy</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, sans-serif; }
+    body { display: flex; flex-direction: column; height: 100vh; background: #121212; color: #fff; }
+    header { display: flex; gap: 10px; padding: 12px 16px; background: #1e1e1e; border-bottom: 1px solid #333; }
+    input { flex: 1; padding: 10px 14px; border-radius: 6px; border: 1px solid #444; background: #2a2a2a; color: #fff; font-size: 16px; }
+    input:focus { outline: none; border-color: #4f8ef7; }
+    button { padding: 10px 20px; border-radius: 6px; border: none; background: #4f8ef7; color: #fff; font-weight: bold; cursor: pointer; font-size: 16px; }
+    button:hover { background: #3b7be3; }
+    iframe { flex: 1; width: 100%; border: none; background: #fff; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <input type="text" id="urlInput" placeholder="Enter URL (e.g., https://example.com)" />
+    <button onclick="loadSite()">Go</button>
+  </header>
+
+  <iframe id="viewport" title="Proxied Content"></iframe>
+
+  <script>
+    // REPLACE THIS WITH YOUR CLOUDFLARE WORKER URL (no trailing slash)
+    const WORKER_URL = "https://calm-base-c363.zayzayket.workers.dev/";
+
+    const input = document.getElementById("urlInput");
+    const iframe = document.getElementById("viewport");
+
+    // Allow pressing Enter to submit
+    input.addEventListener("keypress", (e) => {
+      if (e.key === "Enter") loadSite();
+    });
+
+    function loadSite() {
+      let target = input.value.trim();
+      if (!target) return;
+
+      // Add https:// if user forgot it
+      if (!target.startsWith("http://") && !target.startsWith("https://")) {
+        target = "https://" + target;
+        input.value = target;
+      }
+
+      iframe.src = `${WORKER_URL}/?url=${encodeURIComponent(target)}`;
+    }
+  </script>
+
+</body>
+</html>
